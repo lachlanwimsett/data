@@ -62,6 +62,13 @@
      (vector-map node-val (heap->vector h))))
   '(#f #(2 4 6 8 10) #t #(2 6 8 10) #f #(2 6 8 10) #t #(2 8 10)))
 
+(test-equal? "heap-replace-min!"
+  (let ([h (mkheap)])
+    (list
+     (heap-replace-min! h 9)
+     (heap->vector h)))
+  '(2 #(4 6 8 9 10)))
+
 (define (rand-test range count1 count2 count3)
   (let ([h (make-heap <=)]
         [xs null]) ;; mutated

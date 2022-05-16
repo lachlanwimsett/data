@@ -268,6 +268,18 @@
          #t]
         [else #f]))
 
+(define (heap-replace-min! h v)
+  (match h
+    [(heap vec size <=? elt=>idx)
+     (when (zero? size)
+       (error 'heap-replace-min! "empty-heap"))
+     (let ([min (vector-ref vec 0)])
+       (vector-set! vec 0 v)
+       (when elt=>idx
+         (set-index! elt=>idx v 0)
+         (remove-index! elt=>idx min))
+       (heapify-down <=? vec 0 size elt=>idx)
+       min)]))
 
 (define (in-heap h)
   (in-heap/consume! (heap-copy h)))
@@ -319,27 +331,28 @@
 (provide
  (contract-out
   #:unprotected-submodule unchecked
-  [make-heap        (->  (and (procedure-arity-includes/c 2)
-                              (unconstrained-domain-> any/c))
-                         heap?)]
-  [heap?            (->  any/c boolean?)]
-  [heap-count       (->  heap? exact-nonnegative-integer?)]
-  [heap-add!        (->* (heap?) () #:rest list? void?)]
-  [heap-add-all!    (->  heap? (or/c list? vector? heap?) void?)]
-  [heap-min         (->  heap? any/c)]
-  [heap-remove-min! (->  heap? void?)]
-  [heap-remove!     (->* (heap? any/c) [#:same? (-> any/c any/c any/c)] boolean?)]
-  [heap-remove-eq!  (->  heap? any/c boolean?)]
+  [make-heap         (->  (and (procedure-arity-includes/c 2)
+                               (unconstrained-domain-> any/c))
+                          heap?)]
+  [heap?             (->  any/c boolean?)]
+  [heap-count        (->  heap? exact-nonnegative-integer?)]
+  [heap-add!         (->* (heap?) () #:rest list? void?)]
+  [heap-add-all!     (->  heap? (or/c list? vector? heap?) void?)]
+  [heap-min          (->  heap? any/c)]
+  [heap-remove-min!  (->  heap? void?)]
+  [heap-remove!      (->* (heap? any/c) [#:same? (-> any/c any/c any/c)] boolean?)]
+  [heap-remove-eq!   (->  heap? any/c boolean?)]
+  [heap-replace-min! (->  heap? any/c any/c)]
 
-  [vector->heap     (-> (and (procedure-arity-includes/c 2)
-                             (unconstrained-domain-> any/c))
-                        vector?
-                        heap?)]
-  [heap->vector     (-> heap? vector?)]
-  [heap-copy        (-> heap? heap?)]
+  [vector->heap      (->  (and (procedure-arity-includes/c 2)
+                               (unconstrained-domain-> any/c))
+                          vector?
+                          heap?)]
+  [heap->vector      (->  heap? vector?)]
+  [heap-copy         (->  heap? heap?)]
 
-  [in-heap          (-> heap? sequence?)]
-  [in-heap/consume! (-> heap? sequence?)]))
+  [in-heap           (->  heap? sequence?)]
+  [in-heap/consume!  (->  heap? sequence?)]))
 
 (provide heap-sort!) ; checks done in-function
 

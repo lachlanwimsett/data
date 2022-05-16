@@ -162,6 +162,19 @@ elements according to @racket[eq?], otherwise it may not be possible to remove a
     (heap->vector h)]
 @history[#:added "7.8.0.5"]}
 
+@defproc[(heap-replace-min! [h heap?] [v any/c]) any/c]{
+Returns and removes the least element in the heap @racket[h], while
+adding element @racket[v] to the heap in one operation. More efficent
+than calling @racket[heap-remove-min!] followed by @racket[heap-add!].
+
+@examples[#:eval the-eval
+  (define a-heap (make-heap <=))
+  (heap-add! a-heap 6 2 8 4 9 1 11)
+  (heap->vector a-heap)
+  (heap-replace-min! a-heap 3)
+  (heap->vector a-heap)]
+}
+
 @defproc[(vector->heap [<=? (-> any/c any/c any/c)] [items vector?]) heap?]{
 
 Builds a heap with the elements from @racket[items]. The vector is not
